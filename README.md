@@ -127,3 +127,9 @@ Khóa upload hiện đã được lưu mã hóa trong **Supabase Vault**, tên `
 Do đó project hiện tại **không cần đặt thêm key trong Edge Functions Secrets**. Nếu có biến môi trường `IMAGEKIT_PRIVATE_KEY`, server ưu tiên biến này, sau đó mới dùng Vault. Khi xoay khóa, cập nhật nơi đang cung cấp khóa cho backend; không đưa khóa vào Git hoặc biến VITE_.
 
 Đã upload thực tế **12 ảnh website** vào `/AU_VIET_NEWS`. Manifest URL chính xác nằm tại `src/data/imagekit-assets.json`; dữ liệu bài mẫu và seed dùng các URL này. Ảnh được yêu cầu từ ImageKit với transformation trước, chỉ dùng bản local tương ứng khi ImageKit không tải được. Source ảnh/credits và bản dự phòng vẫn giữ trong project. Các hướng dẫn thiếu key ở phần trước chỉ áp dụng cho một project mới chưa được cấu hình.
+
+## Nhận diện website
+
+Website dùng logo địa cầu xanh–vàng do chủ dự án cung cấp, kết hợp tên **THỜI BÁO VIỆT - ÂU** dựng bằng chữ HTML ở đầu và cuối trang. `src/components/Brand.tsx` giữ nguyên dấu gạch ngang và tên truy cập của liên kết; logo có URL ImageKit trong `src/data/branding.json`, bản gốc trong `public/images/logo-viet-au.png` để dự phòng. Bộ ảnh tham chiếu nhiều phiên bản chỉ được dùng để đối chiếu nhận diện, không hiển thị nguyên tấm trên website.
+
+Giao diện dùng nền trắng, chữ đen và các mức xám cho nền phụ, đường phân cách, trạng thái và nút. Logo giữ màu nguyên bản; ảnh bài viết vẫn giữ màu tự nhiên. Kích thước logo/tên báo điều chỉnh theo desktop, tablet và điện thoại.

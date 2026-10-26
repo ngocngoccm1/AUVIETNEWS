@@ -68,3 +68,11 @@ Bản cuối của thay đổi lưu trữ: build TypeScript/Vite đạt; toàn b
 - Chưa kiểm thử thao tác upload từ một tài khoản biên tập thật vì tài khoản đăng nhập chưa được cung cấp; các phép upload thực tế dùng API ImageKit với key đã được cấp, kết hợp kiểm thử xác thực/loader của backend.
 
 Kết quả cuối: cả 12 URL ImageKit với transformation `w-900,q-85,f-auto` trả HTTP 200. Trình duyệt thực tế xác nhận ảnh chính trang chủ tải từ ImageKit; mobile 390px không tràn ngang. Build thành công; **49/49 kiểm thử đạt**. Root index.html và dist/index.html đồng bộ. Không có khóa riêng trong các file được commit.
+
+## Nhận diện logo và giao diện trắng–đen — 26/10/2026
+
+- Đã đọc được cả 2 ảnh đính kèm từ đường dẫn Windows tương ứng trên WSL. Dùng logo địa cầu trong ảnh nền trong suốt; ảnh ghép nhiều phiên bản chỉ dùng tham chiếu. Không thêm số điện thoại/địa chỉ web từ ảnh tham chiếu vào nội dung website.
+- Logo gốc giữ trong public/images/logo-viet-au.png, đã upload ImageKit với URL trong src/data/branding.json. Bản tối ưu rộng 256px trả HTTP 200, khoảng 27 KB. Header/footer dùng logo tối ưu và fallback về bản gốc; tab trình duyệt dùng cùng biểu tượng.
+- Component Brand dựng tên THỜI BÁO VIỆT - ÂU bằng HTML, giữ đúng dấu gạch ngang và nhãn truy cập. Logo giữ xanh–vàng nguyên bản; nền, chữ và điều khiển dùng trắng, đen, xám. Ảnh bài viết giữ màu tự nhiên.
+- Trình duyệt xác nhận background rgb(255,255,255), text và tên báo rgb(23,23,23). Đã xem desktop/mobile; không tràn ngang tại 320, 375, 390, 768, 1024, 1440px.
+- npm run build đạt; toàn bộ 49/49 kiểm thử có sẵn đạt. Root index.html và dist/index.html tiếp tục được đồng bộ.
