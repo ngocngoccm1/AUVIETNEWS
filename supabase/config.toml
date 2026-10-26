@@ -1,0 +1,6 @@
+project_id = "mbuyxygaxkeocrbwlsuv"
+
+[functions.imagekit-upload]
+# The function verifies the user JWT with auth.getUser and checks editor RLS.
+# Disable the gateway's legacy JWT check for current asymmetric signing keys.
+verify_jwt = false

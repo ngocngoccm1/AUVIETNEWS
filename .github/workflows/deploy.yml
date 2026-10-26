@@ -1,0 +1,40 @@
+name: Deploy static magazine to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build static site
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: https://mbuyxygaxkeocrbwlsuv.supabase.co
+          VITE_SUPABASE_ANON_KEY: sb_publishable_h-oXrrZ_gL8ERLZrqZt6fg_ciRwJ45m
+          VITE_IMAGEKIT_URL_ENDPOINT: https://ik.imagekit.io/noc
+          VITE_IMAGEKIT_PUBLIC_KEY: public_dRw94EIMCBPfRKa4pCi/qrYwp6E=
+          VITE_IMAGEKIT_FOLDER: /AU_VIET_NEWS
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

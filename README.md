@@ -27,7 +27,7 @@ npm run preview
 
 ## Khởi tạo Supabase
 
-Project phản hồi API nhưng tại thời điểm dựng website chưa có bảng `public.articles`.
+Database đã được khởi tạo qua kết nối quản trị Supabase ở lần sửa lưu trữ gần nhất. Các bước dưới đây dành cho việc tạo lại trên một project mới.
 
 1. Mở **Supabase Dashboard → SQL Editor**, chạy `supabase/schema.sql`.
 2. Tùy chọn chạy `supabase/seed.sql` để nạp **15 bài mẫu** với nội dung VI/EN/DE; không phải tin thời sự đã kiểm chứng.
@@ -60,7 +60,7 @@ Thư mục dashboard đã cung cấp giải mã thành **`/AU_VIET_NEWS`**. Publ
 - Biểu mẫu newsletter/gửi chuyện, trang giới thiệu, liên hệ, quyền riêng tư và điều khoản.
 - Desktop, tablet, mobile; menu có đầy đủ tiểu mục; dialog focus trap, nhãn biểu mẫu, skip link và reduced motion.
 
-Có trang tạo bài mới tại `/#/vi/admin` với đăng nhập và RLS theo danh sách biên tập. Chưa có chức năng sửa/xóa bài đã xuất bản, upload media từ client hoặc email delivery.
+Có trang tạo bài mới tại `/#/vi/admin` với đăng nhập và RLS theo danh sách biên tập. Chưa có chức năng sửa/xóa bài đã xuất bản hoặc email delivery. Upload ảnh qua Supabase Edge Function tới ImageKit đã được bổ sung; cần server secret để kích hoạt.
 
 ## Kiểm thử
 
@@ -75,7 +75,7 @@ Kiểm thử frontend dùng Supabase API giả lập có chủ đích để xác
 
 Mở `/#/vi/admin` (hoặc `/#/en/admin`, `/#/de/admin`). Liên kết **Đăng bài** nằm trong menu điện thoại và cuối trang. `/#/vi/post` chuyển tới trang này.
 
-Có thể soạn và xem trước ngay, không cần đăng nhập. Bản nháp lưu **trên trình duyệt của thiết bị** khi bấm Lưu nháp; chưa gửi lên Supabase. Trang hỗ trợ tiêu đề, mô tả, nội dung VI/EN/DE, tiêu đề phụ `##`, chuyên mục/tiểu mục, tác giả, slug tự sinh, ảnh ImageKit và bài nổi bật. Bản tiếng Việt bắt buộc; EN/DE tùy chọn. Ảnh được tải qua ImageKit Dashboard rồi dán URL, không dùng private key trong client.
+Có thể soạn và xem trước ngay, không cần đăng nhập. Bản nháp lưu **trên trình duyệt của thiết bị** khi bấm Lưu nháp; chưa gửi lên Supabase. Trang hỗ trợ tiêu đề, mô tả, nội dung VI/EN/DE, tiêu đề phụ `##`, chuyên mục/tiểu mục, tác giả, slug tự sinh, ảnh ImageKit và bài nổi bật. Bản tiếng Việt bắt buộc; EN/DE tùy chọn. Có thể tải ảnh bằng nút ImageKit qua Edge Function (cần server secret) hoặc tải qua ImageKit Dashboard rồi dán URL; không dùng private key trong client.
 
 Để xuất bản thật, quản trị viên thực hiện một lần:
 
@@ -93,6 +93,29 @@ on conflict (user_id) do nothing;
 
 RLS kiểm tra `auth.uid()` thuộc bảng `editor_accounts`; đăng nhập thông thường chưa đủ quyền đăng bài. Browser chỉ đọc được quyền của chính tài khoản, không thể tự cấp quyền. Không dùng user metadata làm quyền quản trị. Quyền client UPDATE/DELETE bài viết vẫn đóng; trang này phục vụ **tạo bài mới**, không chỉnh/xóa bài đã xuất bản. Hủy quyền bằng cách xóa user_id tương ứng khỏi `editor_accounts` trong SQL Editor. Phiên đăng nhập được lưu riêng trên thiết bị cho tới khi đăng xuất; nháp không lưu mật khẩu/token.
 
-Để dữ liệu thật hoạt động, cần khởi tạo SQL và tài khoản như trên. Các thao tác này chưa được thực hiện trên project Supabase vì chỉ có public key; không thể cấp quyền bằng public key.
-#   A U V I E T N E W S  
- 
+SQL đã được chạy qua kết nối quản trị Supabase. Còn cần tạo tài khoản Auth và cấp quyền biên tập theo hướng dẫn trên.
+# AUVIETNEWS
+
+
+## Trạng thái kết nối thực tế và upload ImageKit
+
+**Đã khởi tạo database trên project `mbuyxygaxkeocrbwlsuv`**, gồm 6 bảng và RLS. API `articles` đã trả HTTP 200. Database dùng **Supabase**, không dùng Firebase. Database hiện trống nên trang chủ tiếp tục có nội dung mẫu có nhãn; chỉ bấm Lưu nháp thì nội dung vẫn nằm trên thiết bị. Xuất bản dùng INSERT thật sau khi đăng nhập và được cấp quyền.
+
+**Đã deploy Edge Function `imagekit-upload`**, source ở `supabase/functions/imagekit-upload/`. Trang Đăng bài có nút tải ảnh từ máy tính. Server xác minh JWT bằng Supabase Auth, kiểm tra `editor_accounts`, kiểm tra định dạng ảnh qua chữ ký file và giới hạn 8 MB. Server cố định thư mục `/AU_VIET_NEWS`, tạo tên duy nhất và không ghi đè ảnh cũ. Chỉ URL ImageKit được điền vào bài; ảnh không lưu tại Firebase/Supabase Storage hay trong localStorage.
+
+Để kích hoạt upload, đặt secret trong **Supabase Dashboard → Edge Functions → Secrets**:
+
+- Name: `IMAGEKIT_PRIVATE_KEY`
+- Value: private key có quyền ghi media của tài khoản ImageKit `noc`.
+
+Không đưa private key vào `.env` Vite, Git hoặc nội dung chat. Server mặc định endpoint `https://ik.imagekit.io/noc`. Nếu dùng endpoint khác, thêm server secret `IMAGEKIT_URL_ENDPOINT` và cập nhật biến public tương ứng ở frontend. Secrets có hiệu lực mà không cần build lại frontend.
+
+Project chưa có tài khoản Supabase Auth ở thời điểm kiểm tra. Tạo tài khoản trong Authentication → Users và cấp quyền bằng SQL ở mục Trang đăng bài. Khi đã đăng nhập, khu vực trạng thái sẽ kiểm tra database và khả năng gọi endpoint upload. Thành công chỉ hiển thị khi server trả metadata của ảnh đã lưu. Nếu upload lỗi, giữ nguyên ảnh bìa cũ và toàn bộ nội dung đang soạn. Ảnh đã upload vẫn ở ImageKit dù chưa xuất bản bài; chọn ảnh khác không tự xóa ảnh trước đó.
+
+Phần website vẫn build static vào `dist/`; chỉ endpoint upload chạy ở Supabase. Dùng lại source backend nếu cần deploy thủ công:
+
+```bash
+supabase functions deploy imagekit-upload --project-ref mbuyxygaxkeocrbwlsuv
+```
+
+`supabase/config.toml` tắt kiểm tra JWT cũ của gateway; **handler tự xác thực JWT và quyền biên tập**, không có anonymous upload. Có thể giới hạn CORS bằng server secret `ALLOWED_ORIGINS` (danh sách origin phân cách dấu phẩy), mặc định `*` để dùng được nhiều static host; mọi POST vẫn yêu cầu JWT của biên tập viên.

@@ -1,0 +1,12 @@
+import * as React from 'react';
+import * as Primitive from '@radix-ui/react-dialog';
+import {useTranslation} from 'react-i18next';
+import { X } from 'lucide-react';
+import { cn } from '../../lib/utils';
+export const Dialog = Primitive.Root;
+export const DialogTrigger = Primitive.Trigger;
+export const DialogTitle = Primitive.Title;
+export const DialogDescription = Primitive.Description;
+export const DialogClose = Primitive.Close;
+export const DialogContent = React.forwardRef<React.ElementRef<typeof Primitive.Content>, React.ComponentPropsWithoutRef<typeof Primitive.Content>>(({className,children,...props},ref)=>{const {t}=useTranslation();return <Primitive.Portal><Primitive.Overlay className="fixed inset-0 z-50 bg-ink/50 backdrop-blur-sm"/><Primitive.Content ref={ref} className={cn('fixed left-1/2 top-1/2 z-50 max-h-[90dvh] w-[calc(100%-2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto bg-paper p-6 shadow-2xl md:p-9',className)} {...props}>{children}<Primitive.Close className="absolute right-3 top-3 flex size-10 items-center justify-center hover:bg-stone-100" aria-label={t('close')}><X size={21}/></Primitive.Close></Primitive.Content></Primitive.Portal>;});
+DialogContent.displayName = 'DialogContent';

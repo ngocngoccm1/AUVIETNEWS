@@ -1,0 +1,18 @@
+import {useState,type FormEvent} from 'react';
+import {useTranslation} from 'react-i18next';
+import {ArrowRight,Check,Mail,Send,Loader2} from 'lucide-react';
+import {useSite} from '../lib/context';
+import {subscribe,sendStory,apiError} from '../lib/api';
+import {Button} from './ui/button';
+import {Dialog,DialogContent,DialogTitle,DialogDescription,DialogTrigger} from './ui/dialog';
+import {Link} from 'react-router-dom';
+export function Newsletter({compact=false}:{compact?:boolean}){
+ const {locale}=useSite();const {t}=useTranslation();const [status,setStatus]=useState('');const [pending,setPending]=useState(false);
+ async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const form=e.currentTarget;setPending(true);setStatus('');try{await subscribe(String(new FormData(form).get('email')),locale);setStatus('subscribed');form.reset();}catch(error){setStatus(apiError(error,'failed'));}finally{setPending(false);}}
+ return <section className={`newsletter ${compact?'newsletter-compact':''}`} id="newsletter"><div className="newsletter-icon"><Mail size={27} strokeWidth={1.25}/></div><div><span className="eyebrow">THE VIET – EUROPE LETTER</span><h2>{t('newsTitle')}</h2><p>{t('newsText')}</p></div><div className="newsletter-form"><form onSubmit={submit}><label className="sr-only" htmlFor={compact?'email-compact':'email-main'}>{t('email')}</label><input id={compact?'email-compact':'email-main'} name="email" type="email" maxLength={254} required placeholder={t('email')}/><Button type="submit" disabled={pending}>{pending?<Loader2 className="animate-spin" size={16}/>:<>{t('subscribe')}<ArrowRight size={17}/></>}</Button></form><p className="consent">{t('consent')} <Link to={`/${locale}/privacy`}>{t('privacy')} ↗</Link></p>{status&&<p role="status" className={status==='subscribed'?'success':'form-error'}>{status==='subscribed'&&<Check size={16}/>} {t(status)}</p>}</div></section>;
+}
+export function StoryForm(){const {t}=useTranslation();const [pending,setPending]=useState(false);const [status,setStatus]=useState('');
+ async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const form=e.currentTarget;const data=new FormData(form);const values={author_name:String(data.get('author_name')).trim(),email:String(data.get('email')).trim(),title:String(data.get('title')).trim(),content:String(data.get('content')).trim()};if(!values.author_name||!values.content){setStatus('required');return;}setPending(true);setStatus('');try{await sendStory(values);setStatus('storySent');form.reset();}catch{setStatus('failed');}finally{setPending(false);}}
+ return <form className="story-form" onSubmit={submit}><label>{t('name')} *<input name="author_name" autoComplete="name" required maxLength={100}/></label><label>{t('storyEmail')} *<input name="email" type="email" autoComplete="email" required maxLength={254}/></label><label>{t('title')}<input name="title" maxLength={200}/></label><label>{t('storyContent')} *<textarea name="content" required minLength={20} maxLength={15000} rows={6}/></label><Button type="submit" disabled={pending}>{pending?t('sending'):t('send')}<Send size={16}/></Button>{status&&<p className={status==='storySent'?'success':'form-error'} role="status">{t(status)}</p>}</form>;
+}
+export function StoryDialog({children}:{children:React.ReactNode}){const {t}=useTranslation();return <Dialog><DialogTrigger asChild>{children}</DialogTrigger><DialogContent><DialogTitle className="dialog-title">{t('submitStory')}</DialogTitle><DialogDescription className="dialog-description">{t('storyIntro')}</DialogDescription><StoryForm/></DialogContent></Dialog>;}
