@@ -47,7 +47,7 @@ Thư mục dashboard đã cung cấp giải mã thành **`/AU_VIET_NEWS`**. Publ
 - Đã chuẩn bị 12 ảnh JPEG ở `public/images/` để giao diện hoạt động ngay. Nguồn: Unsplash; xem `public/images/credits.json`.
 - Tải các JPEG này lên thư mục `/AU_VIET_NEWS` bằng ImageKit dashboard, giữ nguyên tên file.
 - DB chỉ lưu URL ImageKit, ví dụ `https://ik.imagekit.io/noc/AU_VIET_NEWS/berlin.jpg`.
-- `src/lib/imagekit.ts` thêm transformation `tr:w-900,q-85,f-auto` trực tiếp. Chỉ nhận ảnh thuộc endpoint cấu hình. Nếu ảnh thật chưa sẵn sàng, UI dùng ảnh minh họa local; bài mẫu dùng local ngay để không sinh hàng loạt 404.
+- `src/lib/imagekit.ts` thêm transformation `tr:w-900,q-85,f-auto` trực tiếp. Chỉ nhận ảnh thuộc endpoint cấu hình. Nếu ảnh thật chưa sẵn sàng, UI dùng ảnh minh họa local; bài mẫu cũng ưu tiên URL ImageKit thật; local là phương án dự phòng.
 - Public key được cấu hình đúng yêu cầu; URL transformation không cần gửi public key.
 - Đổi ảnh bài thật bằng URL ImageKit; không lưu base64, không dùng Supabase Storage.
 
@@ -60,7 +60,7 @@ Thư mục dashboard đã cung cấp giải mã thành **`/AU_VIET_NEWS`**. Publ
 - Biểu mẫu newsletter/gửi chuyện, trang giới thiệu, liên hệ, quyền riêng tư và điều khoản.
 - Desktop, tablet, mobile; menu có đầy đủ tiểu mục; dialog focus trap, nhãn biểu mẫu, skip link và reduced motion.
 
-Có trang tạo bài mới tại `/#/vi/admin` với đăng nhập và RLS theo danh sách biên tập. Chưa có chức năng sửa/xóa bài đã xuất bản hoặc email delivery. Upload ảnh qua Supabase Edge Function tới ImageKit đã được bổ sung; cần server secret để kích hoạt.
+Có trang tạo bài mới tại `/#/vi/admin` với đăng nhập và RLS theo danh sách biên tập. Chưa có chức năng sửa/xóa bài đã xuất bản hoặc email delivery. Upload ảnh qua Supabase Edge Function tới ImageKit đã được bổ sung; khóa đã được cấu hình qua Supabase Vault.
 
 ## Kiểm thử
 
@@ -103,7 +103,7 @@ SQL đã được chạy qua kết nối quản trị Supabase. Còn cần tạo
 
 **Đã deploy Edge Function `imagekit-upload`**, source ở `supabase/functions/imagekit-upload/`. Trang Đăng bài có nút tải ảnh từ máy tính. Server xác minh JWT bằng Supabase Auth, kiểm tra `editor_accounts`, kiểm tra định dạng ảnh qua chữ ký file và giới hạn 8 MB. Server cố định thư mục `/AU_VIET_NEWS`, tạo tên duy nhất và không ghi đè ảnh cũ. Chỉ URL ImageKit được điền vào bài; ảnh không lưu tại Firebase/Supabase Storage hay trong localStorage.
 
-Để kích hoạt upload, đặt secret trong **Supabase Dashboard → Edge Functions → Secrets**:
+Trên project mới chưa cấu hình Vault, có thể kích hoạt upload bằng secret trong **Supabase Dashboard → Edge Functions → Secrets**:
 
 - Name: `IMAGEKIT_PRIVATE_KEY`
 - Value: private key có quyền ghi media của tài khoản ImageKit `noc`.
@@ -119,3 +119,11 @@ supabase functions deploy imagekit-upload --project-ref mbuyxygaxkeocrbwlsuv
 ```
 
 `supabase/config.toml` tắt kiểm tra JWT cũ của gateway; **handler tự xác thực JWT và quyền biên tập**, không có anonymous upload. Có thể giới hạn CORS bằng server secret `ALLOWED_ORIGINS` (danh sách origin phân cách dấu phẩy), mặc định `*` để dùng được nhiều static host; mọi POST vẫn yêu cầu JWT của biên tập viên.
+
+## ImageKit đã kích hoạt qua Supabase Vault
+
+Khóa upload hiện đã được lưu mã hóa trong **Supabase Vault**, tên `IMAGEKIT_PRIVATE_KEY`. Edge Function version 2 đọc khóa qua RPC `get_imagekit_upload_key()` bằng server role. RPC dùng SECURITY INVOKER và chỉ cấp EXECUTE cho `service_role`; `anon` và `authenticated` không được đọc khóa. Source SQL ở `supabase/imagekit-vault.sql` chỉ chứa cấu trúc và phân quyền, không chứa giá trị khóa.
+
+Do đó project hiện tại **không cần đặt thêm key trong Edge Functions Secrets**. Nếu có biến môi trường `IMAGEKIT_PRIVATE_KEY`, server ưu tiên biến này, sau đó mới dùng Vault. Khi xoay khóa, cập nhật nơi đang cung cấp khóa cho backend; không đưa khóa vào Git hoặc biến VITE_.
+
+Đã upload thực tế **12 ảnh website** vào `/AU_VIET_NEWS`. Manifest URL chính xác nằm tại `src/data/imagekit-assets.json`; dữ liệu bài mẫu và seed dùng các URL này. Ảnh được yêu cầu từ ImageKit với transformation trước, chỉ dùng bản local tương ứng khi ImageKit không tải được. Source ảnh/credits và bản dự phòng vẫn giữ trong project. Các hướng dẫn thiếu key ở phần trước chỉ áp dụng cho một project mới chưa được cấu hình.

@@ -3,6 +3,7 @@ export const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 export const IMAGE_FOLDER = '/AU_VIET_NEWS';
 type Dependencies = {
  env: (name: string) => string | undefined;
+ getPrivateKey?: () => Promise<string | undefined>;
  verifyEditor: (authorization: string) => Promise<200 | 401 | 403 | 503>;
  fetch?: typeof fetch;
 };
@@ -28,7 +29,7 @@ export function createUploadHandler(deps:Dependencies) {
   try {
    const access=await deps.verifyEditor(authorization);
    if(access!==200)return json({code:access===401?'unauthorized':access===403?'editor_required':'database_setup_required'},access);
-   const privateKey=deps.env('IMAGEKIT_PRIVATE_KEY');
+   const privateKey=deps.env('IMAGEKIT_PRIVATE_KEY') || await deps.getPrivateKey?.();
    const endpoint=deps.env('IMAGEKIT_URL_ENDPOINT')||'https://ik.imagekit.io/noc';
    if(!privateKey)return json({code:'imagekit_setup_required'},503);
    if(request.method==='GET')return json({configured:true,folder:IMAGE_FOLDER});

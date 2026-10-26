@@ -1,15 +1,14 @@
-import {useState} from 'react';
+import {useEffect,useState} from 'react';
 import {Link} from 'react-router-dom';
 import {Bookmark,ArrowUpRight,Clock3} from 'lucide-react';
 import {useTranslation} from 'react-i18next';
-import {isSample} from '../lib/api';
 import {useSite} from '../lib/context';
 import {imageUrl,localImage} from '../lib/imagekit';
 import {localize,type Article} from '../lib/types';
 import {getCategory} from '../data/categories';
 export function Photo({article,className='',eager=false,width=900}:{article:Article;className?:string;eager?:boolean;width?:number}){
- const [failed,setFailed]=useState(false);
- return <img src={failed||isSample(article)?localImage(article.cover_image):imageUrl(article.cover_image,width)} onError={()=>setFailed(true)} alt={localize(article,'title',useSite().locale)} className={`article-photo ${className}`} loading={eager?'eager':'lazy'} decoding="async"/>;
+ const [failed,setFailed]=useState(false);useEffect(()=>setFailed(false),[article.cover_image]);
+ return <img src={failed?localImage(article.cover_image):imageUrl(article.cover_image,width)} onError={()=>setFailed(true)} alt={localize(article,'title',useSite().locale)} className={`article-photo ${className}`} loading={eager?'eager':'lazy'} decoding="async"/>;
 }
 export function ArticleCard({article,compact=false}:{article:Article;compact?:boolean}){
  const {locale,saved,toggleSaved}=useSite();const {t}=useTranslation();

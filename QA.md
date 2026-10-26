@@ -58,3 +58,13 @@ Trạng thái mới nhất thay thế các giới hạn khởi tạo SQL ở nh�
 **Chưa kiểm chứng upload thật đến ImageKit:** chưa có IMAGEKIT_PRIVATE_KEY trong cấu hình được cung cấp. Cần chủ tài khoản đặt khóa vào Supabase Edge Functions Secrets. Project cũng chưa có tài khoản Supabase Auth/biên tập tại thời điểm kiểm tra; cần tạo một tài khoản rồi cấp quyền. Không tạo mật khẩu mặc định, không yêu cầu dán khóa riêng vào chat. Các kiểm thử UI upload vẫn dùng phản hồi ImageKit giả lập; không được xem như bằng chứng ảnh đã lưu trên ImageKit thật.
 
 Bản cuối của thay đổi lưu trữ: build TypeScript/Vite đạt; toàn bộ **47/47 kiểm thử đạt** (22 website, 19 editor, 6 handler upload). Đã xem giao diện mobile với kết nối Supabase thật: hiện trạng thái database sẵn sàng và 0 bài, không tràn ngang. Root index.html đã đồng bộ với dist/index.html. Giới hạn còn lại là kích hoạt ImageKit secret và tạo/cấp quyền tài khoản biên tập; chưa có bằng chứng upload ImageKit thật cho tới khi hoàn thành các bước này.
+
+## Kích hoạt ImageKit với khóa thật — 26/10/2026
+
+- Đã lưu khóa được cung cấp vào Supabase Vault; không lưu trong source, .env Vite hoặc bản build. Migration `imagekit_vault_server_only_lookup` tạo RPC SECURITY INVOKER chỉ cho service_role đọc một secret có tên cố định. Kiểm tra quyền: anon=false, authenticated=false, backend=true; API công khai gọi RPC bị từ chối HTTP 401.
+- Đã deploy imagekit-upload version 2, trạng thái ACTIVE; backend đọc environment secret trước, Vault sau. Lookup Vault chỉ xảy ra sau khi xác minh biên tập viên.
+- Đã upload 12 JPEG thật vào /AU_VIET_NEWS bằng ImageKit API. Manifest lưu URL trả về từ API, không tự đoán đường dẫn. Ảnh Berlin được kiểm tra CDN HTTP 200. Bộ bài mẫu và seed đã cập nhật các URL thật; Photo ưu tiên ImageKit, fallback local theo manifest.
+- Thêm kiểm thử backend về thứ tự xác thực trước khi đọc Vault, và kiểm thử UI về nguồn ImageKit/fallback đúng ảnh. Không cần sửa client key hoặc đưa private key vào website.
+- Chưa kiểm thử thao tác upload từ một tài khoản biên tập thật vì tài khoản đăng nhập chưa được cung cấp; các phép upload thực tế dùng API ImageKit với key đã được cấp, kết hợp kiểm thử xác thực/loader của backend.
+
+Kết quả cuối: cả 12 URL ImageKit với transformation `w-900,q-85,f-auto` trả HTTP 200. Trình duyệt thực tế xác nhận ảnh chính trang chủ tải từ ImageKit; mobile 390px không tràn ngang. Build thành công; **49/49 kiểm thử đạt**. Root index.html và dist/index.html đồng bộ. Không có khóa riêng trong các file được commit.
