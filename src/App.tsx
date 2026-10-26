@@ -11,7 +11,7 @@ import Listing from './pages/Listing';
 import Media from './pages/Media';
 import Info from './pages/Info';
 import {lazy,Suspense} from 'react';
-const Editor=lazy(()=>import('./pages/Editor'));
+const Editor=lazy(()=>import('./pages/Admin'));
 function Layout(){const {locale:routeLocale}=useParams();const locale=(['vi','en','de'].includes(routeLocale||'')?routeLocale:'vi') as Locale;const {i18n,t}=useTranslation();const location=useLocation();const query=useArticles();const [saved,setSaved]=useState<string[]>(()=>{try{const value=JSON.parse(localStorage.getItem('viet-au-saved')||'[]');return Array.isArray(value)?value.filter(v=>typeof v==='string'):[];}catch{return [];}});const toggleSaved=useCallback((id:string)=>{setSaved(prev=>{const next=prev.includes(id)?prev.filter(v=>v!==id):[...prev,id];try{localStorage.setItem('viet-au-saved',JSON.stringify(next));}catch{/* Storage may be disabled by browser settings. */}return next;});},[]);
  useEffect(()=>{i18n.changeLanguage(locale);document.documentElement.lang=locale;try{localStorage.setItem('viet-au-locale',locale);}catch{}},[locale,i18n]);
  useEffect(()=>{window.scrollTo({top:0,behavior:'instant'});document.getElementById('main')?.focus({preventScroll:true});document.title=`THỜI BÁO VIỆT - ÂU | ${t('mission')}`;},[location.pathname,t]);

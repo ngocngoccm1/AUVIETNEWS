@@ -76,3 +76,13 @@ Kết quả cuối: cả 12 URL ImageKit với transformation `w-900,q-85,f-auto
 - Component Brand dựng tên THỜI BÁO VIỆT - ÂU bằng HTML, giữ đúng dấu gạch ngang và nhãn truy cập. Logo giữ xanh–vàng nguyên bản; nền, chữ và điều khiển dùng trắng, đen, xám. Ảnh bài viết giữ màu tự nhiên.
 - Trình duyệt xác nhận background rgb(255,255,255), text và tên báo rgb(23,23,23). Đã xem desktop/mobile; không tràn ngang tại 320, 375, 390, 768, 1024, 1440px.
 - npm run build đạt; toàn bộ 49/49 kiểm thử có sẵn đạt. Root index.html và dist/index.html tiếp tục được đồng bộ.
+
+## Tài khoản mặc định, chặn admin và tự tạo đường dẫn — 26/10/2026
+
+- Đã tạo tài khoản Supabase Auth thật qua Auth Admin API, xác nhận email và thêm vào editor_accounts. Username `admin` ánh xạ tới email đăng nhập nội bộ được cấu hình trong client. Mật khẩu sinh ngẫu nhiên, chỉ giao riêng cho chủ dự án; không lưu trong source, tài liệu, biến VITE_ hay bundle.
+- Thao tác cấp tài khoản một lần đã được gỡ ngay sau khi hoàn thành. Edge Function imagekit-upload được khôi phục về mã upload trước đó, version 4 với cùng source hash như bản upload dùng Vault. Không còn nhánh cấp tài khoản trong function đang phục vụ.
+- Trang Admin tách riêng màn hình đăng nhập, không mount Editor khi chưa đăng nhập, đang kiểm tra quyền hoặc tài khoản không được cấp quyền. Đăng xuất gỡ phần soạn bài ngay. Bản nháp lưu trên thiết bị không hiển thị trước bước xác thực.
+- Loại bỏ ô nhập đường dẫn và trạng thái chỉnh tay. URL tự tạo từ tiêu đề tiếng Việt; API tự thêm hậu tố khi trùng, giữ nguyên mã yêu cầu qua retry và nhận lại bài đã lưu khi bị trùng mã yêu cầu. Không còn yêu cầu nhập slug trong xác thực biểu mẫu.
+- Đã đăng nhập thật qua Auth API và qua Chromium bằng username admin; xác minh quyền biên tập, endpoint ImageKit sẵn sàng và đăng xuất ẩn Editor. Đã thử INSERT dưới role authenticated của tài khoản thật trong transaction rồi rollback; không để lại bài kiểm tra công khai.
+- Kiểm tra trình duyệt: form đăng nhập và soạn bài ở desktop/mobile; mobile 390px không tràn ngang, URL tự sinh nhip-cau-viet-au và không có ô slug để nhập. Không chụp hoặc lưu mật khẩu trong ảnh nghiệm thu.
+- TypeScript/Vite build đạt; toàn bộ 50/50 kiểm thử đạt, gồm chặn khách, chờ kiểm tra role, tài khoản chưa được duyệt, alias đăng nhập, phiên đăng nhập sau reload, đăng xuất, đường dẫn tự tạo, retry trùng URL, giữ bản nháp và upload ảnh. Root index.html đồng bộ với dist/index.html.

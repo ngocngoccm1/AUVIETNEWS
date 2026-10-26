@@ -75,12 +75,12 @@ Kiểm thử frontend dùng Supabase API giả lập có chủ đích để xác
 
 Mở `/#/vi/admin` (hoặc `/#/en/admin`, `/#/de/admin`). Liên kết **Đăng bài** nằm trong menu điện thoại và cuối trang. `/#/vi/post` chuyển tới trang này.
 
-Có thể soạn và xem trước ngay, không cần đăng nhập. Bản nháp lưu **trên trình duyệt của thiết bị** khi bấm Lưu nháp; chưa gửi lên Supabase. Trang hỗ trợ tiêu đề, mô tả, nội dung VI/EN/DE, tiêu đề phụ `##`, chuyên mục/tiểu mục, tác giả, slug tự sinh, ảnh ImageKit và bài nổi bật. Bản tiếng Việt bắt buộc; EN/DE tùy chọn. Có thể tải ảnh bằng nút ImageKit qua Edge Function (cần server secret) hoặc tải qua ImageKit Dashboard rồi dán URL; không dùng private key trong client.
+Trang quản trị bắt buộc đăng nhập và có quyền biên tập trước khi hiện phần soạn bài. Bản nháp lưu **trên trình duyệt của thiết bị** khi bấm Lưu nháp; chưa gửi lên Supabase. Trang hỗ trợ tiêu đề, mô tả, nội dung VI/EN/DE, tiêu đề phụ `##`, chuyên mục/tiểu mục, tác giả, slug tự sinh, ảnh ImageKit và bài nổi bật. Bản tiếng Việt bắt buộc; EN/DE tùy chọn. Có thể tải ảnh bằng nút ImageKit qua Edge Function (cần server secret) hoặc tải qua ImageKit Dashboard rồi dán URL; không dùng private key trong client.
 
-Để xuất bản thật, quản trị viên thực hiện một lần:
+Với project mới chưa có tài khoản biên tập, quản trị viên thực hiện một lần:
 
 1. Chạy `supabase/schema.sql` nếu chưa khởi tạo database. Schema mới đã có phần phân quyền biên tập. Nếu đã chạy schema cũ, chỉ cần chạy thêm `supabase/editor.sql`.
-2. Mở **Supabase → Authentication → Users → Add user → Create new user**, tạo tài khoản email/mật khẩu cho biên tập viên và xác nhận email. Không tạo tài khoản hay mật khẩu mặc định trong mã nguồn.
+2. Mở **Supabase → Authentication → Users → Add user → Create new user**, tạo tài khoản email/mật khẩu cho biên tập viên và xác nhận email. Không đặt mật khẩu trong mã nguồn.
 3. Trong SQL Editor, thay email thật của biên tập viên và chạy:
 
 ```sql
@@ -110,7 +110,7 @@ Trên project mới chưa cấu hình Vault, có thể kích hoạt upload bằn
 
 Không đưa private key vào `.env` Vite, Git hoặc nội dung chat. Server mặc định endpoint `https://ik.imagekit.io/noc`. Nếu dùng endpoint khác, thêm server secret `IMAGEKIT_URL_ENDPOINT` và cập nhật biến public tương ứng ở frontend. Secrets có hiệu lực mà không cần build lại frontend.
 
-Project chưa có tài khoản Supabase Auth ở thời điểm kiểm tra. Tạo tài khoản trong Authentication → Users và cấp quyền bằng SQL ở mục Trang đăng bài. Khi đã đăng nhập, khu vực trạng thái sẽ kiểm tra database và khả năng gọi endpoint upload. Thành công chỉ hiển thị khi server trả metadata của ảnh đã lưu. Nếu upload lỗi, giữ nguyên ảnh bìa cũ và toàn bộ nội dung đang soạn. Ảnh đã upload vẫn ở ImageKit dù chưa xuất bản bài; chọn ảnh khác không tự xóa ảnh trước đó.
+Project đã có tài khoản quản trị mặc định được tạo bằng Supabase Auth Admin API; mật khẩu được cấp riêng và không lưu trong Git. Tạo tài khoản trong Authentication → Users và cấp quyền bằng SQL ở mục Trang đăng bài. Khi đã đăng nhập, khu vực trạng thái sẽ kiểm tra database và khả năng gọi endpoint upload. Thành công chỉ hiển thị khi server trả metadata của ảnh đã lưu. Nếu upload lỗi, giữ nguyên ảnh bìa cũ và toàn bộ nội dung đang soạn. Ảnh đã upload vẫn ở ImageKit dù chưa xuất bản bài; chọn ảnh khác không tự xóa ảnh trước đó.
 
 Phần website vẫn build static vào `dist/`; chỉ endpoint upload chạy ở Supabase. Dùng lại source backend nếu cần deploy thủ công:
 
@@ -133,3 +133,11 @@ Do đó project hiện tại **không cần đặt thêm key trong Edge Function
 Website dùng logo địa cầu xanh–vàng do chủ dự án cung cấp, kết hợp tên **THỜI BÁO VIỆT - ÂU** dựng bằng chữ HTML ở đầu và cuối trang. `src/components/Brand.tsx` giữ nguyên dấu gạch ngang và tên truy cập của liên kết; logo có URL ImageKit trong `src/data/branding.json`, bản gốc trong `public/images/logo-viet-au.png` để dự phòng. Bộ ảnh tham chiếu nhiều phiên bản chỉ được dùng để đối chiếu nhận diện, không hiển thị nguyên tấm trên website.
 
 Giao diện dùng nền trắng, chữ đen và các mức xám cho nền phụ, đường phân cách, trạng thái và nút. Logo giữ màu nguyên bản; ảnh bài viết vẫn giữ màu tự nhiên. Kích thước logo/tên báo điều chỉnh theo desktop, tablet và điện thoại.
+
+## Đăng nhập quản trị bắt buộc và đường dẫn tự động
+
+`/#/vi/admin` và `/#/vi/post` bắt buộc đăng nhập; bản EN/DE tương tự. Khi chưa đăng nhập, đang kiểm tra quyền hoặc tài khoản không có trong `editor_accounts`, ứng dụng không mount phần soạn bài, không đọc bản nháp vào form và không hiện nút upload/xuất bản. Đăng xuất lập tức trở về màn hình đăng nhập. Quyền ghi ở Supabase tiếp tục được bảo vệ bởi RLS.
+
+Tài khoản quản trị mặc định có tên đăng nhập `admin`, ánh xạ tới `admin@thoibaovietau.local`. Đây là định danh đăng nhập nội bộ, không dùng nhận email. Tài khoản được tạo thật bằng Auth Admin API và được xác nhận email phía server; mật khẩu ngẫu nhiên được giao riêng cho chủ dự án, không nằm trong source, tài liệu hoặc bundle. Việc tạo tài khoản một lần đã kết thúc; không để lại endpoint cấp tài khoản công khai.
+
+Đường dẫn bài viết không còn là ô nhập bắt buộc. Hệ thống tự sinh từ tiêu đề tiếng Việt, hiển thị bản xem trước chỉ đọc, và tự thêm hậu tố khi trùng. Một mã yêu cầu xuất bản được giữ ổn định trong phiên soạn để nhận lại kết quả cũ nếu phản hồi thành công trước đó bị mất; thử lại do trùng URL không tạo thêm bản sao của cùng yêu cầu.

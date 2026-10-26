@@ -5,6 +5,8 @@ export const editorClient=createClient(raw.startsWith('https://')?raw:`https://$
  auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'viet-au-editor-auth'},
  global:{fetch:(input,init)=>fetch(input,{...init,signal:init?.signal||AbortSignal.timeout(15000)})}
 });
+export const defaultEditorEmail='admin@thoibaovietau.local';
+export function editorLoginEmail(value:string){const name=value.trim().toLowerCase();return name==='admin'?defaultEditorEmail:name;}
 export interface ArticleDraft {title_vi:string;title_en:string;title_de:string;excerpt_vi:string;excerpt_en:string;excerpt_de:string;content_vi:string;content_en:string;content_de:string;slug:string;category:string;subcategory:string;cover_image:string;author:string;featured:boolean;}
 export const blankDraft:ArticleDraft={title_vi:'',title_en:'',title_de:'',excerpt_vi:'',excerpt_en:'',excerpt_de:'',content_vi:'',content_en:'',content_de:'',slug:'',category:'tieu-diem',subcategory:'',cover_image:'',author:'Ban Biên Tập',featured:false};
 export const draftStorageKey='viet-au-article-draft-v1';
@@ -12,6 +14,20 @@ export function restoreDraft():ArticleDraft{try{const stored=JSON.parse(localSto
 export function articleSlug(title:string){return title.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,160).replace(/-$/,'');}
 export function validCover(value:string){if(!value.trim())return true;try{const url=new URL(value);const endpoint=new URL(import.meta.env.VITE_IMAGEKIT_URL_ENDPOINT);return url.protocol==='https:'&&!url.username&&!url.password&&url.origin===endpoint.origin&&url.pathname.startsWith(endpoint.pathname.replace(/\/$/,'')+'/')&&!url.hash;}catch{return false;}}
 export function readingTime(content:string){return Math.max(1,Math.ceil(content.trim().split(/\s+/).filter(Boolean).length/200));}
-export function draftPayload(draft:ArticleDraft){const optional=(v:string)=>v.trim()||null;return {slug:draft.slug.trim(),category:draft.category,subcategory:optional(draft.subcategory),cover_image:optional(draft.cover_image),author:draft.author.trim()||'Ban Biên Tập',featured:draft.featured,reading_time:readingTime(draft.content_vi),title_vi:draft.title_vi.trim(),title_en:optional(draft.title_en),title_de:optional(draft.title_de),excerpt_vi:draft.excerpt_vi.trim(),excerpt_en:optional(draft.excerpt_en),excerpt_de:optional(draft.excerpt_de),content_vi:draft.content_vi.trim(),content_en:optional(draft.content_en),content_de:optional(draft.content_de)};}
-export async function publishArticle(draft:ArticleDraft):Promise<Article>{const {data,error}=await editorClient.from('articles').insert(draftPayload(draft)).select('*').single();if(error)throw error;return data as Article;}
+export function draftPayload(draft:ArticleDraft){const optional=(v:string)=>v.trim()||null;return {slug:articleSlug(draft.title_vi)||'bai-viet',category:draft.category,subcategory:optional(draft.subcategory),cover_image:optional(draft.cover_image),author:draft.author.trim()||'Ban Biên Tập',featured:draft.featured,reading_time:readingTime(draft.content_vi),title_vi:draft.title_vi.trim(),title_en:optional(draft.title_en),title_de:optional(draft.title_de),excerpt_vi:draft.excerpt_vi.trim(),excerpt_en:optional(draft.excerpt_en),excerpt_de:optional(draft.excerpt_de),content_vi:draft.content_vi.trim(),content_en:optional(draft.content_en),content_de:optional(draft.content_de)};}
+export async function publishArticle(draft:ArticleDraft,requestId=crypto.randomUUID()):Promise<Article>{
+ const payload=draftPayload(draft);const base=payload.slug;let lastError:unknown;
+ for(let attempt=0;attempt<3;attempt++){
+  const slug=attempt?`${base.slice(0,150)}-${crypto.randomUUID().slice(0,8)}`:base;
+  const {data,error}=await editorClient.from('articles').insert({...payload,id:requestId,slug}).select('*').single();
+  if(!error)return data as Article;
+  if(error.code!=='23505')throw error;
+  // A lost success response must not create a second article when retried.
+  const existing=await editorClient.from('articles').select('*').eq('id',requestId).maybeSingle();
+  if(existing.error)throw existing.error;
+  if(existing.data)return existing.data as Article;
+  lastError=error;
+ }
+ throw lastError;
+}
 export function editorError(error:unknown):'duplicate'|'setup'|'forbidden'|'network'|'invalidLogin'|'generic'{const e=error as {code?:string;message?:string;status?:number};if(e?.code==='23505')return 'duplicate';if(['PGRST205','42P01','42501'].includes(e?.code||''))return e?.code==='42501'?'forbidden':'setup';if(['PGRST301','PGRST302','PGRST303'].includes(e?.code||'')||e?.status===401||e?.status===403)return 'forbidden';if(['invalid_credentials','email_not_confirmed','invalid_grant'].includes(e?.code||'')||e?.message?.toLowerCase().includes('invalid login'))return 'invalidLogin';if(e?.message?.includes('fetch')||e?.message?.includes('timeout')||e?.message?.includes('aborted'))return 'network';return 'generic';}
