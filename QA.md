@@ -86,3 +86,13 @@ Kết quả cuối: cả 12 URL ImageKit với transformation `w-900,q-85,f-auto
 - Đã đăng nhập thật qua Auth API và qua Chromium bằng username admin; xác minh quyền biên tập, endpoint ImageKit sẵn sàng và đăng xuất ẩn Editor. Đã thử INSERT dưới role authenticated của tài khoản thật trong transaction rồi rollback; không để lại bài kiểm tra công khai.
 - Kiểm tra trình duyệt: form đăng nhập và soạn bài ở desktop/mobile; mobile 390px không tràn ngang, URL tự sinh nhip-cau-viet-au và không có ô slug để nhập. Không chụp hoặc lưu mật khẩu trong ảnh nghiệm thu.
 - TypeScript/Vite build đạt; toàn bộ 50/50 kiểm thử đạt, gồm chặn khách, chờ kiểm tra role, tài khoản chưa được duyệt, alias đăng nhập, phiên đăng nhập sau reload, đăng xuất, đường dẫn tự tạo, retry trùng URL, giữ bản nháp và upload ảnh. Root index.html đồng bộ với dist/index.html.
+
+## Giao diện theo phatgiao.org.vn - 28/10/2026
+
+- Đối chiếu trang mẫu bằng trình duyệt desktop 1440px và mobile 390px, đọc stylesheet công khai. Xác nhận font đọc/tiêu đề là Roboto, màu nhấn #993333, khung nội dung 1220px, tin chính ngang và timeline Tin mới bên phải.
+- Audit trước chỉnh: giao diện trắng/đen, Be Vietnam Pro + Lora/Playfair, hero ba cột, các mảng giới thiệu lớn. Giữ logo, nhận diện THỜI BÁO VIỆT - ÂU, 7 chuyên mục/34 tiểu mục, nội dung, các đường dẫn HashRouter và toàn bộ thao tác đọc/đăng bài. Chuyển sang trang báo theo tham chiếu; variance 3, motion 1, density 7. Đây là cảm hứng bố cục, không dùng logo hoặc nội dung của trang mẫu.
+- Roboto Variable tự host thông qua Fontsource (OFL); loại bỏ Google Fonts và các font serif cũ. Đồng bộ font cho tiêu đề, nội dung, nút và biểu mẫu. Vite đóng gói font vào assets tương đối, dùng được tại GitHub Pages repo subpath.
+- Trang chủ: tin chính ảnh 58% / nội dung 42%, hai tin phụ + góc nhìn, cột tin mới/tin đọc nhiều, chuyên mục và đủ liên kết tiểu mục, multimedia, newsletter. Mobile xếp một cột, cỡ chữ đọc 16-18px và tiêu đề 22-24px, menu/tìm kiếm hai bên logo.
+- Kiểm tra viewport 320/375/390/768/1024/1440px, tất cả không tràn ngang. Sửa margin ảnh bài viết để khớp lề mobile 15px. Đã xem ảnh desktop/mobile, khối chuyên mục và newsletter/footer. Font load thực sự và computed font là Roboto Variable.
+- Build TypeScript/Vite thành công. 50/50 kiểm thử đạt: chuyên mục/tiểu mục, menu mobile, responsive các trang, chuyển ngôn ngữ, tìm kiếm, đọc bài, đăng nhập/quyền admin, tự tạo slug, upload, newsletter, root/subpath deployment. Bộ test dùng Edge trên Windows và static server Node đa nền tảng.
+- Giữ root index.html đồng bộ dist/index.html, không cần server hỗ trợ rewrite. Không thay đổi schema, dữ liệu hoặc tài khoản.

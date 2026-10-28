@@ -132,7 +132,7 @@ Do đó project hiện tại **không cần đặt thêm key trong Edge Function
 
 Website dùng logo địa cầu xanh–vàng do chủ dự án cung cấp, kết hợp tên **THỜI BÁO VIỆT - ÂU** dựng bằng chữ HTML ở đầu và cuối trang. `src/components/Brand.tsx` giữ nguyên dấu gạch ngang và tên truy cập của liên kết; logo có URL ImageKit trong `src/data/branding.json`, bản gốc trong `public/images/logo-viet-au.png` để dự phòng. Bộ ảnh tham chiếu nhiều phiên bản chỉ được dùng để đối chiếu nhận diện, không hiển thị nguyên tấm trên website.
 
-Giao diện dùng nền trắng, chữ đen và các mức xám cho nền phụ, đường phân cách, trạng thái và nút. Logo giữ màu nguyên bản; ảnh bài viết vẫn giữ màu tự nhiên. Kích thước logo/tên báo điều chỉnh theo desktop, tablet và điện thoại.
+Giao diện cập nhật ngày 28/10/2026 theo bố cục tham chiếu phatgiao.org.vn: nền trắng, chữ đen/xám, điểm nhấn đỏ trầm #993333. Font Roboto Variable được tự host trong assets, hỗ trợ dấu tiếng Việt và tiếng Đức. Logo giữ màu nguyên bản. Trang chủ có tin chính nằm ngang, tin phụ, cột Tin mới, bài đọc nhiều và đủ 7 khối chuyên mục/34 tiểu mục. Trên điện thoại bố cục chuyển thành một cột, menu và tìm kiếm nằm hai bên logo.
 
 ## Đăng nhập quản trị bắt buộc và đường dẫn tự động
 
