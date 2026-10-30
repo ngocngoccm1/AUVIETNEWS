@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from './supabase';
 import demo from '../data/articles.json';
+import reference from '../data/reference-articles.json';
 import type { Article, Comment, Locale } from './types';
-export const sampleArticles = demo as Article[];
+export const sampleArticles = [...reference, ...demo] as Article[];
 export function useArticles() { return useQuery({queryKey:['articles'],queryFn:async()=>{
  const {data,error}=await supabase.from('articles').select('*').order('published_at',{ascending:false}).limit(200);
  if(error) throw error;
- return (data||[]) as Article[];
+ return (data||[]).map(row=>{const original=reference.find(a=>a.slug===row.slug);return original?{...original,...row}:row;}) as Article[];
 },retry:1,staleTime:5*60*1000}); }
 export function isSample(article:Article) { return article.id.startsWith('00000000-0000-4000-8000-'); }
 export function useComments(articleId:string,enabled:boolean) { return useQuery({queryKey:['comments',articleId],queryFn:async()=>{

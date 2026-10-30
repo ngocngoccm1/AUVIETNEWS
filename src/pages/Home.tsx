@@ -13,6 +13,12 @@ export function SectionHeading({title,subtitle,to,green=false}:{title:string;sub
  return <div className={`section-heading ${green?'heading-green':''}`}><div><h2><span/>{title}</h2>{subtitle&&<p>{subtitle}</p>}</div>{to&&<Link to={to}>{t('seeAll')}<ArrowUpRight size={16}/></Link>}</div>;
 }
 
+function ReferenceSection({kind='life'}:{kind?:'life'|'questions'}){
+ const {locale,articles}=useSite();const stories=articles.filter(a=>a.source_url&&(kind==='questions'?a.source_topic==='Hỏi đáp':a.source_topic!=='Hỏi đáp')).slice(0,kind==='questions'?4:5);
+ if(!stories.length)return null;
+ const titles={vi:{life:'Sống an vui',questions:'Hỏi đáp & Văn hóa tâm linh',more:'Đọc bài lược thuật'},en:{life:'Living with awareness',questions:'Questions & spiritual culture',more:'Read the summary'},de:{life:'Achtsam leben',questions:'Fragen & spirituelle Kultur',more:'Zusammenfassung lesen'}}[locale];
+ return <section className={`reference-section heritage-panel reference-${kind}`} aria-label={titles[kind]}><div className="reference-heading"><h2>{titles[kind]}</h2><span>THỜI BÁO VIỆT - ÂU</span></div><div className="reference-grid">{stories.map((a,i)=><article key={a.id} className={i===0?'reference-first':''}><Link to={`/${locale}/article/${a.slug}`} className="reference-image"><Photo article={a} width={i===0?1000:600}/></Link><Link to={`/${locale}/article/${a.slug}`}><h3>{localize(a,'title',locale)}</h3></Link>{i===0&&<p>{localize(a,'excerpt',locale)}</p>}<Link className="reference-read" to={`/${locale}/article/${a.slug}`}>{titles.more}<ArrowUpRight size={14}/></Link></article>)}</div></section>;
+}
 export default function Home(){
  const {locale,articles,demoMode,loading}=useSite();const {t}=useTranslation();
  const lead=articles.find(a=>a.featured)||articles[0];
@@ -21,19 +27,21 @@ export default function Home(){
  const popular=[...articles].sort((a,b)=>b.views-a.views).slice(0,6);
  const label={vi:{latest:'Tin mới',perspective:'Góc nhìn Việt – Âu',popular:'Tin đọc nhiều trong tuần',connection:'Nhịp cầu Việt – Âu',empty:'Khám phá chuyên mục'},en:{latest:'Latest news',perspective:'Vietnam – Europe perspectives',popular:'Most read this week',connection:'Connecting Vietnam & Europe',empty:'Explore this section'},de:{latest:'Aktuelle Nachrichten',perspective:'Vietnam – Europa Perspektiven',popular:'Meistgelesen diese Woche',connection:'Vietnam und Europa verbinden',empty:'Rubrik entdecken'}}[locale];
  return <div className="wrap newspaper-home">
+  <nav className="heritage-topics" aria-label={locale==='vi'?'Chủ đề nổi bật':'Featured topics'}><span>{locale==='vi'?'Dòng chảy cuộc sống':locale==='en'?'Life & culture':'Leben & Kultur'}</span>{categories.map(c=><Link key={c.slug} to={`/${locale}/category/${c.slug}`}>{c.short[locale]}</Link>)}</nav>
   <div className="news-columns">
    <div className="news-main">
     {lead&&<section className="news-opening" aria-label={t('focus')}>
      <article className="news-lead">
       <Link className="news-lead-image" to={`/${locale}/article/${lead.slug}`}><Photo article={lead} eager width={1200}/></Link>
-      <div className="news-lead-copy"><Link className="news-kicker" to={`/${locale}/category/${lead.category}`}>{getCategory(lead.category)?.short[locale]}</Link><Link to={`/${locale}/article/${lead.slug}`}><h1>{localize(lead,'title',locale)}</h1></Link><p>{localize(lead,'excerpt',locale)}</p></div>
+      <div className="news-lead-copy"><Link className="news-kicker" to={`/${locale}/category/${lead.category}`}>{lead.source_topic||getCategory(lead.category)?.short[locale]}</Link><Link to={`/${locale}/article/${lead.slug}`}><h1>{localize(lead,'title',locale)}</h1></Link><p>{localize(lead,'excerpt',locale)}</p></div>
      </article>
      <div className="news-supporting">
       {supporting.slice(0,2).map(a=><ArticleCard key={a.id} article={a} compact/>)}
       <article className="news-perspective"><span className="perspective-label">{label.perspective}</span>{supporting[2]?<><Link to={`/${locale}/article/${supporting[2].slug}`}><h2>{localize(supporting[2],'title',locale)}</h2></Link><p>{localize(supporting[2],'excerpt',locale)}</p><div className="perspective-author"><div><strong>{supporting[2].author}</strong><span>{getCategory(supporting[2].category)?.short[locale]}</span></div><Heart size={29} strokeWidth={1.3}/></div></>:<><h2>{t('mission')}</h2><p>{t('bridge')}</p></>}</article>
      </div>
     </section>}
-    <Link className="news-connection-banner" to={`/${locale}/about`}><ArrowUpRight size={22}/><span>{label.connection}<small>{t('mission')}</small></span><ArrowRight size={22}/></Link>
+    <Link className="news-connection-banner heritage-panel" to={`/${locale}/about`}><ArrowUpRight size={22}/><span>{label.connection}<small>{t('mission')}</small></span><ArrowRight size={22}/></Link>
+    <ReferenceSection/>
     {categories.map(category=>{
      const stories=articles.filter(a=>a.category===category.slug).slice(0,4);
      return <section className="news-category" key={category.slug}>
@@ -49,7 +57,9 @@ export default function Home(){
     <section className="news-community"><Heart size={27} strokeWidth={1.3}/><h2>{t('communityTitle')}</h2><p>{t('communityText')}</p><StoryDialog><Button>{t('submitStory')}<ArrowUpRight size={16}/></Button></StoryDialog></section>
    </aside>
   </div>
+  <ReferenceSection kind="questions"/>
   <section className="media-preview newspaper-media"><SectionHeading title={t('multimedia')} to={`/${locale}/multimedia`}/><div className="media-grid">{[{icon:Play,label:'video',image:articles[0],title:'videoTitle',type:'video'},{icon:AudioLines,label:'podcast',image:articles.find(a=>a.category==='cong-dong')||lead,title:'audioTitle',type:'podcast'},{icon:Images,label:'photoStories',image:articles.find(a=>a.category==='van-hoa')||lead,title:'photoStories',type:'photos'}].filter(item=>item.image).map(({icon:Icon,label,image,title,type})=><Link className={`media-tile media-${type}`} key={type} to={`/${locale}/multimedia?tab=${type}`}><Photo article={image}/><div className="media-tile-overlay"/><span className="media-type"><Icon size={14}/>{t(label)}</span><div className="media-tile-bottom"><h3>{t(title)}</h3><span className="media-play"><Icon size={20}/></span></div></Link>)}</div></section>
+  <section className="heritage-connect heritage-panel"><span className="eyebrow">THỜI BÁO VIỆT - ÂU</span><h2>{locale==='vi'?'Cùng nhau lan tỏa những giá trị tốt đẹp':locale==='en'?'Share the stories that bring us together':'Geschichten teilen, die uns verbinden'}</h2><p>{t('communityText')}</p><StoryDialog><Button>{t('submitStory')}<ArrowUpRight size={18}/></Button></StoryDialog><span className="heritage-connect-mission">{t('mission')}</span></section>
   <Newsletter/>
   <p className="news-edition-note">{loading?t('loading'):demoMode?t('sample'):t('magazine')}</p>
  </div>;

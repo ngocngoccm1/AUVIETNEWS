@@ -6,6 +6,7 @@ import {QueryClient,QueryClientProvider} from '@tanstack/react-query';
 import './lib/i18n';
 import './index.css';
 import './newspaper.css';
+import './heritage.css';
 import App from './App';
 const queryClient = new QueryClient({defaultOptions:{queries:{refetchOnWindowFocus:false}}});
 ReactDOM.createRoot(document.getElementById('root')!).render(<React.StrictMode><QueryClientProvider client={queryClient}><HashRouter future={{v7_startTransition:true,v7_relativeSplatPath:true}}><App/></HashRouter></QueryClientProvider></React.StrictMode>);

@@ -1,0 +1,65 @@
+{
+  "retrieved_at": "2026-10-30",
+  "source": "https://phatgiao.org.vn/",
+  "reuse_notice": "Trang nguồn công khai hoan nghênh sao chép nội dung ở chân trang. Bản tích hợp vẫn ghi nguồn, dùng bản lược thuật và liên kết trực tiếp.",
+  "patterns": [
+    {
+      "file": "src/assets/heritage-pattern.png",
+      "url": "https://sf.ex-cdn.com/phatgiao.org.vn/v0.0.377/templates/themes/images/patten-1.png"
+    },
+    {
+      "file": "src/assets/heritage-medallion.png",
+      "url": "https://sf.ex-cdn.com/phatgiao.org.vn/v0.0.377/templates/themes/images/patten-4.png"
+    }
+  ],
+  "articles": [
+    {
+      "title": "Xá Vệ Thành - Thánh địa gắn với 24 mùa an cư của Đức Phật",
+      "url": "https://phatgiao.org.vn/xa-ve-thanh-thanh-dia-gan-voi-24-mua-an-cu-cua-duc-phat-htdp106071.html",
+      "image_file": "reference-01.jpg",
+      "image_source": "https://i.ex-cdn.com/phatgiao.org.vn/files/content/2026/10/22/xa-ve-thanh-thanh-dia-gan-voi-24-mua-an-cu-cua-duc-phat-1615.jpg"
+    },
+    {
+      "title": "Cách chăm sóc người già",
+      "url": "https://phatgiao.org.vn/cach-cham-soc-nguoi-gia-d106284.html",
+      "image_file": "reference-02.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2026/10/30/amhia-1808.jpg"
+    },
+    {
+      "title": "Cuộc đối thoại giữa Phật giáo và khoa học thần kinh",
+      "url": "https://phatgiao.org.vn/cuoc-doi-thoai-giua-phat-giao-va-khoa-hoc-than-kinh-g106275.html",
+      "image_file": "reference-03.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2026/10/30/screenshot-2026-10-30-121809-1219.jpg"
+    },
+    {
+      "title": "Ta không nên trở thành nạn nhân của lời nói hay nhận xét của người khác",
+      "url": "https://phatgiao.org.vn/ta-khong-nen-tro-thanh-nan-nhan-cua-loi-noi-hay-nhan-xet-cua-nguoi-khac-d106281.html",
+      "image_file": "reference-04.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2026/10/30/phan-xet1-1738.jpg"
+    },
+    {
+      "title": "Một ngày qua đi, một đời ngắn lại",
+      "url": "https://phatgiao.org.vn/mot-ngay-qua-di-mot-doi-ngan-lai-d106280.html",
+      "image_file": "reference-05.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2026/10/30/vo-thuong2-1630.jpg"
+    },
+    {
+      "title": "Đến với gia chủ theo lời Phật dạy",
+      "url": "https://phatgiao.org.vn/den-voi-gia-chu-theo-loi-phat-day-d97362.html",
+      "image_file": "reference-06.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2025/10/25/loi-phat-day-1955.jpg"
+    },
+    {
+      "title": "Quan Âm Diệu Thiện là vị nào?",
+      "url": "https://phatgiao.org.vn/quan-am-dieu-thien-la-vi-nao-d106148.html",
+      "image_file": "reference-07.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2026/10/26/ecf74e5b-4799-4db8-ab2b-67d2a02083b1-0856.jpg"
+    },
+    {
+      "title": "Niệm Quán Âm có được vãng sinh?",
+      "url": "https://phatgiao.org.vn/niem-quan-am-co-duoc-vang-sinh-d106101.html",
+      "image_file": "reference-08.jpg",
+      "image_source": "https://t.ex-cdn.com/phatgiao.org.vn/560w/files/content/2026/10/23/03f9d4e4-5ef2-442a-8de8-61cc987dd06f-1731.jpg"
+    }
+  ]
+}

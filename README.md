@@ -141,3 +141,11 @@ Giao diện cập nhật ngày 28/10/2026 theo bố cục tham chiếu phatgiao.
 Tài khoản quản trị mặc định có tên đăng nhập `admin`, ánh xạ tới `admin@thoibaovietau.local`. Đây là định danh đăng nhập nội bộ, không dùng nhận email. Tài khoản được tạo thật bằng Auth Admin API và được xác nhận email phía server; mật khẩu ngẫu nhiên được giao riêng cho chủ dự án, không nằm trong source, tài liệu hoặc bundle. Việc tạo tài khoản một lần đã kết thúc; không để lại endpoint cấp tài khoản công khai.
 
 Đường dẫn bài viết không còn là ô nhập bắt buộc. Hệ thống tự sinh từ tiêu đề tiếng Việt, hiển thị bản xem trước chỉ đọc, và tự thêm hậu tố khi trùng. Một mã yêu cầu xuất bản được giữ ổn định trong phiên soạn để nhận lại kết quả cũ nếu phản hồi thành công trước đó bị mất; thử lại do trùng URL không tạo thêm bản sao của cùng yêu cầu.
+
+## Nội dung chọn lọc và nền hoa văn (30/10/2026)
+
+Website bổ sung 8 bài lược thuật từ các chủ đề của Phatgiao.org.vn, có tiêu đề, ảnh, trang đọc và nút mở bài gốc. Nội dung được lưu thật trong Supabase; ảnh được upload qua endpoint xác thực vào ImageKit `/AU_VIET_NEWS`. `supabase/reference-seed.sql` cho phép khởi tạo các bài này trên project mới, không ghi đè bài trùng slug. `src/data/reference-articles.json` cung cấp bản dự phòng và thông tin xuất xứ cho các bài đã nhập. Metadata xuất xứ được ghép theo slug khi đọc database, không thay thế nội dung biên tập trong database.
+
+`src/assets/heritage-pattern.png` và `heritage-medallion.png` là hai ảnh hoa văn của trang tham chiếu. Nguồn tài nguyên và bài viết ghi tại `src/data/reference-credits.json`. Trang nguồn công khai hoan nghênh sao chép ở chân trang; bản tích hợp vẫn ghi nguồn và dùng lược thuật. Không sao chép tên tổ chức, giấy phép, địa chỉ, tài khoản quyên góp hoặc mã theo dõi của trang nguồn.
+
+Nền hoa văn xuất hiện tại dải chủ đề, khối Sống an vui, Hỏi đáp, khối kết nối nền vàng, bài liên quan và footer đỏ trầm. `src/heritage.css` tham chiếu ảnh qua CSS để Vite đóng gói thành URL tương đối; các nền tiếp tục hoạt động khi host ở repo subpath. Trên điện thoại, khối bài đọc chuyển thành một cột chính và các ảnh phụ thích ứng theo chiều rộng. Tên THỜI BÁO VIỆT - ÂU, logo, menu 7 chuyên mục/34 tiểu mục, đăng nhập admin và tự sinh slug tiếp tục được giữ.

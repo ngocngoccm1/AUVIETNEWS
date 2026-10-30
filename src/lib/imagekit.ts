@@ -11,6 +11,6 @@ export function imageUrl(source:string|null, width=900) {
 export function localImage(source:string|null) {
  const uploadedName = Object.entries(uploadedAssets).find(([,url])=>url===source)?.[0];
  const filename = uploadedName ? `${uploadedName}.jpg` : source?.split('/').pop()?.split('?')[0];
- const available=['berlin.jpg','vietnam.jpg','saigon.jpg','energy.jpg','coffee.jpg','education.jpg','community.jpg','technology.jpg','europe.jpg','culture.jpg','health.jpg','hanoi.jpg'];
+ const available=Object.keys(uploadedAssets).map(name=>`${name}.jpg`);
  return `${import.meta.env.BASE_URL}images/${filename && available.includes(filename) ? filename : 'berlin.jpg'}`;
 }
